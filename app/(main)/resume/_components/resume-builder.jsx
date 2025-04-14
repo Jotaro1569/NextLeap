@@ -23,9 +23,15 @@ import useFetch from "@/hooks/use-fetch";
 import { useUser } from "@clerk/nextjs";
 import { entriesToMarkdown } from "@/app/lib/helper";
 import { resumeSchema } from "@/app/lib/schema";
-import html2pdf from "html2pdf.js/dist/html2pdf.min.js";
 
 export default function ResumeBuilder({ initialContent }) {
+  const [isBrowser, setIsBrowser] = useState(false);
+
+  // Check if we're in a browser on component mount
+  useEffect(() => {
+    setIsBrowser(true);
+  }, []);
+  
   const [activeTab, setActiveTab] = useState("edit");
   const [previewContent, setPreviewContent] = useState(initialContent);
   const { user } = useUser();
@@ -91,7 +97,7 @@ export default function ResumeBuilder({ initialContent }) {
     if (contactInfo.twitter) parts.push(`🐦 [Twitter](${contactInfo.twitter})`);
 
     return parts.length > 0
-      ? `## <div align="center">${user.fullName}</div>
+      ? `## <div align="center">${user?.fullName || ""}</div>
         \n\n<div align="center">\n\n${parts.join(" | ")}\n\n</div>`
       : "";
   };
@@ -115,21 +121,93 @@ export default function ResumeBuilder({ initialContent }) {
   const generatePDF = async () => {
     setIsGenerating(true);
     try {
-      const element = document.getElementById("resume-pdf");
-      const opt = {
-        margin: [15, 15],
-        filename: "resume.pdf",
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      };
-
-      await html2pdf().set(opt).from(element).save();
+      // Dynamically import jsPDF
+      const jsPDFModule = await import('jspdf');
+      const jsPDF = jsPDFModule.default || jsPDFModule.jsPDF;
+      
+      // Create a new PDF document
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4"
+      });
+      
+      // Set standard font
+      doc.setFont("helvetica", "normal");
+      
+      // Parse the markdown into sections
+      const sections = parseMarkdownToSections(previewContent);
+      
+      let currentY = 20; // Start position
+      const margin = 20;
+      const pageWidth = 210; // A4 width in mm
+      const contentWidth = pageWidth - (margin * 2);
+      
+      // Add each section to the PDF
+      sections.forEach(section => {
+        // Add header
+        if (section.title) {
+          doc.setFontSize(16);
+          doc.setFont("helvetica", "bold");
+          doc.text(section.title, margin, currentY);
+          currentY += 10;
+        }
+        
+        // Add content with proper line breaks
+        if (section.content) {
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "normal");
+          
+          const lines = doc.splitTextToSize(section.content, contentWidth);
+          
+          // Check if we need a new page
+          if (currentY + (lines.length * 5) > 280) {
+            doc.addPage();
+            currentY = 20;
+          }
+          
+          doc.text(lines, margin, currentY);
+          currentY += (lines.length * 6) + 10;
+        }
+      });
+      
+      // Save the PDF
+      doc.save("resume.pdf");
+      toast.success("PDF downloaded successfully!");
     } catch (error) {
       console.error("PDF generation error:", error);
+      toast.error("Failed to generate PDF");
     } finally {
       setIsGenerating(false);
     }
+  };
+  
+  // Function to parse markdown into sections
+  const parseMarkdownToSections = (markdown) => {
+    const sections = [];
+    
+    // Split by headings (## or ###)
+    const parts = markdown.split(/^#{2,3}\s+(.*)$/m);
+    
+    // First part is always before any heading
+    if (parts[0].trim()) {
+      sections.push({
+        title: "",
+        content: parts[0].trim()
+      });
+    }
+    
+    // Process remaining parts
+    for (let i = 1; i < parts.length; i += 2) {
+      if (i + 1 < parts.length) {
+        sections.push({
+          title: parts[i].trim(),
+          content: parts[i + 1].trim()
+        });
+      }
+    }
+    
+    return sections;
   };
 
   const onSubmit = async (data) => {
