@@ -35,11 +35,34 @@ export default function RootLayout({ children }) {
             <main className ="min-h-screen">{children}</main>
             <Toaster richColors />
             {/* footer */}
-            <footer className="bg-muted/50 py-12">
-              <div className="container mx-auto px-4 text-center text-gray-200">
-                <p> Made By Robinder Singh</p>
-              </div>
-            </footer>
+           <footer className="bg-gradient-to-tr from-muted via-background to-muted py-12 mt-20 border-t border-muted-foreground/10">
+  <div className="container mx-auto px-4 text-center space-y-4">
+    <h4 className="text-2xl font-bold text-primary">Our Project Team</h4>
+
+    <p className="text-base text-muted-foreground max-w-xl mx-auto">
+      This major project is a proud creation by:
+    </p>
+
+    <div className="flex flex-wrap justify-center gap-4 text-sm text-foreground font-medium">
+      <span className="px-3 py-1 bg-muted rounded-full shadow">Robinder Singh</span>
+      <span className="px-3 py-1 bg-muted rounded-full shadow">Tanvi Sharma</span>
+      <span className="px-3 py-1 bg-muted rounded-full shadow">Lavanya Bhat</span>
+      <span className="px-3 py-1 bg-muted rounded-full shadow">Rohan Kumar</span>
+    </div>
+
+    <p className="text-sm text-muted-foreground pt-4 italic">
+      With heartfelt guidance and encouragement from our HOD,<br />
+      <span className="font-semibold text-primary">Sh. Sanjay Koul</span>
+    </p>
+
+    <p className="text-xs text-muted-foreground mt-4">
+      © {new Date().getFullYear()} Government Polytechnic College, Jammu. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+
+
             
           </ThemeProvider>
       </body>
