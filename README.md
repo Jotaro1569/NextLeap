@@ -6,6 +6,7 @@
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=flat&logo=prisma)
 ![Clerk](https://img.shields.io/badge/Auth-Clerk-4B32C3?style=flat)
 ![Google AI](https://img.shields.io/badge/AI-Google%20Gemini-4285F4?style=flat&logo=google)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=flat)](https://next-leap-iota.vercel.app/)
 
 NextLeap is a **full-stack web application** designed to help students and professionals **build resumes, track assessments, and gain personalized job market insights**.  
 
