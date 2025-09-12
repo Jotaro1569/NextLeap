@@ -10,7 +10,7 @@
 
 NextLeap is a **full-stack web application** designed to help students and professionals **build resumes, track assessments, and gain personalized job market insights**.  
 
-It combines **AI-generated suggestions**, **MCQ-based interview prep**, and **dynamic PDF export** — all wrapped in a modern, dark-themed UI.
+It combines **AI-generated suggestions**, **MCQ-based interview prep**, and **dynamic PDF export**  all wrapped in a modern, dark-themed UI.
 
 ---
 
